@@ -1,3 +1,6 @@
 alt_acsincome_ca_features_one_hot_encoded.csv
 venv/
 __pycache__/
+.venv/
+alt_acsincome_co_features_one_hot_encoded.csv
+alt_acsincome_ne_features_one_hot_encoded.csv
