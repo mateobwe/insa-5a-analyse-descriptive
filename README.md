@@ -99,7 +99,7 @@ Une recherche d’hyperparamètres a été réalisée via **GridSearchCV** afin 
   - Temps : 64.82 s  
   - Matrice de confusion : cf. notebook  
 
-  ![alt text](RF_Train.png)
+ ![alt text](RF_Train.png)
 
 - **Performances test**
   - Accuracy : 0.8236  
@@ -131,7 +131,7 @@ L’optimisation permet une diminution du sur-apprentissage et une amélioration
   - Accuracy : 0.7852  
   - Temps : 137.06 s  
 
-  ![alt text](AB_Train.png)
+   ![alt text](AB_Train.png)
 
 - **Performances test**
   - Accuracy : 0.7853  
@@ -171,8 +171,7 @@ AdaBoost montre une bonne stabilité avec peu de sur-apprentissage, mais des per
   - Accuracy : 0.8201  
   - Temps : 163.89 s  
 
-  ![alt text](GB_Test.png)
-
+ ![alt text](GB_Test.png)
 **Analyse :**  
 Gradient Boosting bénéficie fortement de l’optimisation et atteint des performances proches du Random Forest optimisé, avec un bon compromis biais/variance, au prix d’un temps de calcul plus élevé.
 
@@ -239,20 +238,20 @@ Le même pipeline de pré-traitement que pour le jeu de données initial a été
 ### Matrices de confusion
 
 **Random Forest (optimisé)**  
-[[13660 4674]
+[[13660 4674]]
 
 [ 2033 10939]]
 
 
  
 **AdaBoost (optimisé)**  
-[[13833 4501]
+[[13833 4501]]
 
 [ 2920 10052]]
 
 
 **XGBoost (optimisé)**  
-[[13470 4864]
+[[13470 4864]]
 
 [ 1901 11071]]
 
@@ -316,3 +315,127 @@ Parallèlement, le temps d’entraînement augmente fortement avec la taille du 
 ### Analyse
 
 Ces résultats mettent en évidence un compromis entre performance et coût computationnel. Si l’utilisation de l’ensemble des données permet d’obtenir la meilleure performance, les gains deviennent faibles par rapport à l’augmentation significative du temps de calcul. Une taille intermédiaire du jeu d’entraînement permet ainsi d’obtenir des performances proches du maximum tout en réduisant le coût computationnel.
+
+
+## 3. Explicabilité des prédictions
+
+Dans cette section, nous analysons les prédictions du modèle le plus performant obtenu lors de l’expérimentation 2, à savoir le **Random Forest optimisé**, afin de mieux comprendre les mécanismes de décision du modèle. Nous utilisons des méthodes d’explicabilité globales et locales, ainsi qu’une approche contrefactuelle.
+
+---
+
+### 3.1 Classement des attributs dans la prédiction (explication globale)
+
+#### Principe de la méthode
+
+Afin d’évaluer l’importance des attributs dans les décisions du modèle, nous utilisons la méthode de **permutation feature importance**.  
+Le principe est le suivant :
+
+- On mesure d’abord la performance du modèle sur un jeu de données de référence.
+- Puis, pour chaque attribut, on permute aléatoirement ses valeurs entre les individus.
+- On mesure la perte de performance induite par cette permutation.
+- Plus la performance diminue, plus l’attribut est jugé important pour le modèle.
+
+Cette méthode est **agnostique au modèle**, facile à interpréter et permet d’obtenir une vision globale de l’influence des variables.
+
+#### Implémentation
+
+En raison de la taille importante du jeu de données et du nombre élevé de variables (après encodage one-hot), la permutation a été réalisée sur un **sous-échantillon du jeu de test** afin de réduire le temps de calcul et les contraintes mémoire.  
+Les paramètres utilisés sont :
+- nombre de répétitions : faible (2 à 3)
+- calcul en mode séquentiel (`n_jobs=1`)
+
+#### Résultats et interprétation
+
+Le graphique de permutation importance met en évidence que les attributs les plus influents sont principalement liés à :
+- la **profession (OCCP)**,
+- le **nombre d’heures travaillées par semaine (WKHP)**,
+- le **niveau d’éducation (SCHL)**,
+- l’**âge (AGEP)**.
+
+Ces résultats sont cohérents avec le problème étudié (prédiction d’un revenu supérieur à 50k$) et confirment que le modèle s’appuie sur des facteurs socio-professionnels pertinents.
+
+Cette analyse permet également de mieux comprendre les décisions du modèle et d’anticiper son comportement sur de nouveaux individus.
+
+---
+
+### 3.2 Explications locales
+
+#### 3.2.1 LIME
+
+##### Principe
+
+LIME (Local Interpretable Model-agnostic Explanations) est une méthode d’explication locale qui vise à expliquer la prédiction d’un **individu précis**.  
+Elle fonctionne en :
+- générant des perturbations autour de l’exemple étudié,
+- observant les variations de prédiction,
+- ajustant un modèle linéaire localement pour approximer le comportement du modèle complexe.
+
+##### Implémentation
+
+Nous avons utilisé la librairie `lime` pour expliquer les prédictions de plusieurs individus du jeu de test.  
+Pour chaque individu sélectionné :
+- les 10 attributs les plus influents localement sont affichés,
+- un graphique en barres indique les contributions positives (en vert) et négatives (en rouge) à la prédiction de la classe `>50k`.
+
+##### Analyse des résultats
+
+Les graphiques LIME montrent que, pour un individu donné :
+- certaines professions ou catégories socio-professionnelles ont un impact négatif fort,
+- d’autres attributs comme certaines origines ou catégories professionnelles contribuent positivement à la prédiction,
+- la décision finale résulte d’un **équilibre entre contributions positives et négatives**.
+
+LIME permet ainsi de comprendre **pourquoi le modèle a pris une décision précise pour un individu donné**, ce qui est essentiel pour l’interprétabilité et la confiance dans le modèle.
+
+---
+
+#### 3.2.2 SHAP
+
+*(Partie laissée volontairement vide)*
+
+---
+
+#### 3.2.3 Comparaison LIME / SHAP
+
+*(Partie laissée volontairement vide)*
+
+---
+
+#### 3.2.4 Approfondissement SHAP – summary plot
+
+*(Partie laissée volontairement vide)*
+
+---
+
+#### 3.2.5 Analyse par sous-groupes (TP, TN, FP, FN)
+
+*(Partie laissée volontairement vide)*
+
+---
+
+### 3.3 Explication contrefactuelle
+
+#### Principe
+
+L’explication contrefactuelle consiste à modifier manuellement certaines valeurs d’un individu afin d’observer l’impact de ces changements sur la prédiction du modèle.  
+L’objectif est de répondre à la question :  
+**“Que faudrait-il changer pour inverser la prédiction du modèle ?”**
+
+#### Implémentation
+
+Nous avons sélectionné un individu du jeu de test et étudié l’impact de la variation de plusieurs attributs continus importants, notamment :
+- le nombre d’heures travaillées par semaine (WKHP),
+- l’âge (AGEP).
+
+Pour chaque attribut, nous avons fait varier progressivement sa valeur et observé l’évolution de la **probabilité prédite d’appartenir à la classe >50k**.
+
+#### Résultats et interprétation
+
+Le graphique contrefactuel montre que :
+- la probabilité prédite évolue de manière relativement stable pour WKHP,
+- l’âge a un impact plus marqué sur la probabilité,
+- dans le cas étudié, la prédiction reste au-dessus du seuil de décision (0.5), indiquant une **prédiction robuste**.
+
+Cela signifie que, pour cet individu, des modifications raisonnables des attributs étudiés ne suffisent pas à inverser la décision du modèle.  
+Cette analyse met en évidence les limites de l’action individuelle sur la prédiction et renforce la compréhension du comportement global du modèle.
+
+---
