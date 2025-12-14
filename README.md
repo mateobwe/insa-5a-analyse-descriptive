@@ -1,8 +1,7 @@
 # insa-5a-analyse-descriptive
 
-#######################################################################
-#  Binôme : NOM Prénom / NOM Prénom
-#######################################################################
+
+#  Binôme : AMRI Yassine / Blyweert Mateo
 
 ## Jeu de données : pré-traitement
 
@@ -100,11 +99,14 @@ Une recherche d’hyperparamètres a été réalisée via **GridSearchCV** afin 
   - Temps : 64.82 s  
   - Matrice de confusion : cf. notebook  
 
+  ![alt text](RF_Train.png)
+
 - **Performances test**
   - Accuracy : 0.8236  
   - Temps : 64.82 s  
   - Matrice de confusion : cf. notebook  
 
+  ![alt text](RF_Test.png)
 **Analyse :**  
 L’optimisation permet une diminution du sur-apprentissage et une amélioration de l’accuracy sur test. Le Random Forest optimisé présente une meilleure capacité de généralisation.
 
@@ -129,9 +131,14 @@ L’optimisation permet une diminution du sur-apprentissage et une amélioration
   - Accuracy : 0.7852  
   - Temps : 137.06 s  
 
+  ![alt text](AB_Train.png)
+
 - **Performances test**
   - Accuracy : 0.7853  
   - Temps : 137.06 s  
+
+  ![alt text](AB_Test.png)
+
 
 **Analyse :**  
 AdaBoost montre une bonne stabilité avec peu de sur-apprentissage, mais des performances globales inférieures à celles du Random Forest et du Gradient Boosting.
@@ -158,9 +165,13 @@ AdaBoost montre une bonne stabilité avec peu de sur-apprentissage, mais des per
   - Accuracy : 0.8316  
   - Temps : 163.89 s  
 
+  ![alt text](GB_Train.png)
+
 - **Performances test**
   - Accuracy : 0.8201  
   - Temps : 163.89 s  
+
+  ![alt text](GB_Test.png)
 
 **Analyse :**  
 Gradient Boosting bénéficie fortement de l’optimisation et atteint des performances proches du Random Forest optimisé, avec un bon compromis biais/variance, au prix d’un temps de calcul plus élevé.
