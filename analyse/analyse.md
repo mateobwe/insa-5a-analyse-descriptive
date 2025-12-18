@@ -64,7 +64,7 @@ Après encodage, le jeu de données contient **808 variables explicatives**.
 | Evaluation en train | Random Forest | AdaBoost | XGBoost |
 |--------------------|---------------|----------|---------|
 | Accuracy           | 0.9981        | 0.7781   | 0.7995  |
-| Temps de calcul (s)| ~110          | ~48      | ~132    |
+| Temps de calcul (s)| 78.64          | 24.18      | 92.94    |
 | Matrice confusion  | figure | figure| figure |
     
 ![png](output_5_2.png)
@@ -80,7 +80,6 @@ Après encodage, le jeu de données contient **808 variables explicatives**.
 | Evaluation en test | Random Forest | AdaBoost | XGBoost |
 |-------------------|---------------|----------|---------|
 | Accuracy          | 0.8130        | 0.7771   | 0.7986  |
-| Temps de calcul (s)| ~110         | ~48      | ~132    |
 | Matrice confusion | cf. notebook  | cf. notebook | cf. notebook |
 
     
@@ -96,7 +95,7 @@ Après encodage, le jeu de données contient **808 variables explicatives**.
 
 ### Commentaires et analyse
 
-Le Random Forest par défaut obtient une accuracy très élevée en entraînement, indiquant un fort sur-apprentissage. AdaBoost et Gradient Boosting présentent des performances plus équilibrées, mais avec une accuracy globale légèrement inférieure. Ces résultats motivent une phase d’optimisation des hyperparamètres.
+Le Random Forest par défaut obtient une accuracy très élevée en entraînement (plus de 99,8% !), ce qui montre un sur-apprentissage. AdaBoost et Gradient Boosting présentent des performances plus équilibrées, mais avec une accuracy globale légèrement inférieure. Ces résultats expliquent pourquoi une phase d’optimisation des hyperparamètres est nécessaire afin d'obtenir les meilleurs résultats possibles.
 
     
 
@@ -130,7 +129,6 @@ Une recherche d’hyperparamètres a été réalisée via **GridSearchCV** afin 
 
 - **Performances entraînement**
   - Accuracy : 0.9374  
-  - Temps : 64.82 s  
   - Matrice de confusion : cf. notebook  
 
 
@@ -138,12 +136,15 @@ Une recherche d’hyperparamètres a été réalisée via **GridSearchCV** afin 
 
 - **Performances test**
   - Accuracy : 0.8236  
-  - Temps : 64.82 s  
   - Matrice de confusion : cf. notebook  
 
 ![png](output_13_3.png)
+
+![png](RF_OPTI.png)
+
+
 **Analyse :**  
-L’optimisation permet une diminution du sur-apprentissage et une amélioration de l’accuracy sur test. Le Random Forest optimisé présente une meilleure capacité de généralisation.
+L’optimisation permet une diminution du sur-apprentissage et une amélioration de l’accuracy lors des tests. Le Random Forest optimisé présente une meilleure capacité de généralisation.
 
 ---
 
@@ -164,7 +165,6 @@ L’optimisation permet une diminution du sur-apprentissage et une amélioration
 
 - **Performances entraînement**
   - Accuracy : 0.7852  
-  - Temps : 137.06 s  
 
  
 
@@ -173,11 +173,11 @@ L’optimisation permet une diminution du sur-apprentissage et une amélioration
 
 - **Performances test**
   - Accuracy : 0.7853  
-  - Temps : 137.06 s  
 
 
     
 ![png](output_14_1.png)
+![png](AB_OPTI.png)
 
 
 **Analyse :**  
@@ -203,19 +203,19 @@ AdaBoost montre une bonne stabilité avec peu de sur-apprentissage, mais des per
 
 - **Performances entraînement**
   - Accuracy : 0.8316  
-  - Temps : 163.89 s  
 
    
 ![png](output_14_5.png)
 
 - **Performances test**
   - Accuracy : 0.8216  
-  - Temps : 163.89 s  
 
 ![png](output_14_4.png)
+![png](GB_OPTI.png)
+
 
 **Analyse :**  
-e modèle de Gradient Boosting bénéficie fortement de l’optimisation des hyperparamètres. Il atteint des performances sur l’ensemble de test très proches de celles du Random Forest optimisé, tout en maintenant un meilleur équilibre biais/variance. Malgré un temps de calcul plus élevé, ce modèle offre un excellent compromis entre performance prédictive et capacité de généralisation, ce qui en fait le modèle le plus pertinent pour la suite de l’étude, notamment pour les analyses d’explicabilité.
+Le modèle de Gradient Boosting bénéficie fortement de l’optimisation des hyperparamètres. Il atteint des performances sur l’ensemble de test très proches de celles du Random Forest optimisé, tout en maintenant un meilleur équilibre. Malgré un temps de calcul plus élevé, ce modèle offre un excellent compromis entre performance prédictive et capacité de généralisation, ce qui en fait le modèle le plus pertinent pour la suite de l’étude, notamment pour les analyses d’explicabilité.
 
 
 
@@ -241,14 +241,14 @@ Les modèles comparés correspondent aux **meilleures configurations obtenues en
 L’Expérimentation 3 met en évidence les différences de performance et de comportement entre les meilleurs modèles issus de l’optimisation.
 Le **Random Forest optimisé** obtient une très bonne accuracy sur l’ensemble de test (0.8206), tout en conservant un temps de calcul relativement faible. La réduction de l’écart entre les performances en entraînement et en test par rapport aux modèles par défaut indique une bonne capacité de généralisation et une diminution du sur-apprentissage.
 
-Le **Gradient Boosting optimisé** présente les meilleures performances globales parmi les trois modèles, avec une accuracy en test de 0.8216. Il offre un bon compromis biais/variance et une meilleure régularité des prédictions. En contrepartie, son temps de calcul est plus élevé, ce qui peut constituer une contrainte dans des contextes nécessitant une forte efficacité computationnelle.
+Le **Gradient Boosting optimisé** présente les meilleures performances globales parmi les trois modèles, avec une accuracy en test de 0.8216. Il offre un bon équilibre et une meilleure régularité des prédictions. En contrepartie, son temps de calcul est plus élevé, ce qui peut constituer une contrainte dans des contextes nécessitant une forte efficacité computationnelle.
 
 L’**AdaBoost optimisé** est le modèle le plus stable, avec des performances très proches entre l’entraînement et le test, traduisant un sur-apprentissage limité. Cependant, son accuracy reste inférieure à celle des deux autres modèles, ce qui le rend moins performant sur ce jeu de données.
 
 Au regard de l’ensemble des résultats obtenus, le **Gradient Boosting optimisé** apparaît comme le meilleur compromis global entre performance prédictive, robustesse et capacité de généralisation. Il est donc retenu comme modèle final pour la suite du projet, en particulier pour les analyses d’explicabilité des prédictions.
 
 
-## Expérimentation 4 : inférence sur un autre jeu de données (optionnel)
+## Expérimentation 4 : inférence sur un autre jeu de données
 
 L’Expérimentation 4 permet d’évaluer la capacité de généralisation des modèles optimisés lorsqu’ils sont appliqués à des jeux de données provenant d’autres États, sans phase de ré-entraînement. Cette démarche met en évidence la robustesse des modèles face à des distributions de données légèrement différentes.
 
@@ -281,11 +281,11 @@ Sur le jeu de données du Nevada, les performances globales diminuent pour l’e
 
 L’analyse comparative sur les trois États (California, Colorado, Nevada) met en évidence une tendance générale :
 
-le Gradient Boosting optimisé reste le modèle le plus robuste et le plus performant en moyenne,
+- le Gradient Boosting optimisé reste le modèle le plus robuste et le plus performant en moyenne,
 
-le Random Forest optimisé montre une très bonne stabilité et parfois de meilleures performances lorsque les distributions changent davantage,
+- le Random Forest optimisé montre une très bonne stabilité et parfois de meilleures performances lorsque les distributions changent davantage,
 
-l’AdaBoost optimisé reste systématiquement en retrait, bien qu’il conserve une bonne stabilité.
+- l’AdaBoost optimisé reste systématiquement en retrait, bien qu’il conserve une bonne stabilité.
 
 Ces résultats confirment que les modèles optimisés, et en particulier le Gradient Boosting, possèdent une bonne capacité de généralisation inter-États, tout en soulignant l’impact des différences de distribution des données sur les performances prédictives.
 
@@ -297,7 +297,7 @@ Cette expérimentation vise à analyser l’influence de la taille du jeu d’en
 
 ### Résultats obtenus
 
-Les résultats montrent que l’accuracy sur le jeu de test augmente progressivement avec la taille du jeu d’entraînement. L’amélioration est significative entre 10 % et 50 % des données, puis devient plus marginale au-delà de 75 %. À 100 % des données, l’accuracy atteint 0.8187, ce qui représente un gain limité par rapport à l’utilisation de 75 % des données.
+Les résultats montrent que l’accuracy sur le jeu de test augmente progressivement avec la taille du jeu d’entraînement. L’amélioration est significative entre 10 % et 50 % des données, puis devient plus lente au-delà de 75 %. À 100 % des données, l’accuracy atteint 0.8187, ce qui représente un gain limité par rapport à l’utilisation de 75 % des données.
 
 Parallèlement, le temps d’entraînement augmente fortement avec la taille du jeu de données, passant d’environ 2.7 secondes pour 10 % des données à plus de 60 secondes pour l’ensemble du jeu d’entraînement.
 
@@ -306,7 +306,7 @@ Parallèlement, le temps d’entraînement augmente fortement avec la taille du 
 
 ### Analyse
 
-Ces résultats mettent en évidence un compromis entre performance et coût computationnel. Si l’utilisation de l’ensemble des données permet d’obtenir la meilleure performance, les gains deviennent faibles par rapport à l’augmentation significative du temps de calcul. Une taille intermédiaire du jeu d’entraînement permet ainsi d’obtenir des performances proches du maximum tout en réduisant le coût computationnel.
+Ces résultats mettent en évidence un compromis entre performance et complexité. Si l’utilisation de l’ensemble des données permet d’obtenir la meilleure performance, les gains deviennent faibles par rapport à l’augmentation significative du temps de calcul. Une taille intermédiaire du jeu d’entraînement permet ainsi d’obtenir des performances proches du maximum tout en réduisant le coût computationnel.
 
 
 
@@ -328,7 +328,7 @@ Le principe est le suivant :
 - On mesure la perte de performance induite par cette permutation.
 - Plus la performance diminue, plus l’attribut est jugé important pour le modèle.
 
-Cette méthode est **agnostique au modèle**, facile à interpréter et permet d’obtenir une vision globale de l’influence des variables.
+Cette méthode est **spécifique au modèle**, facile à interpréter et permet d’obtenir une vision globale de l’influence des variables.
 
 #### Implémentation
 
@@ -342,10 +342,7 @@ Les paramètres utilisés sont :
 Le graphique de permutation importance met en évidence que les attributs les plus influents sont principalement liés à :
 
 - le **nombre d’heures travaillées par semaine (WKHP)**,
-- l’**âge (AGEP)**.
-puis on trouve 
-- la **profession (OCCP)**,
-- le **niveau d’éducation (SCHL)**
+- l’**âge (AGEP)**
     
 ![png](permutation.png)
     
@@ -390,7 +387,7 @@ LIME permet ainsi de comprendre **pourquoi le modèle a pris une décision préc
 
 #### 3.2.2 SHAP
 
-*(Partie laissée volontairement vide)*
+
 ![png](shap.png)
 ---
 
